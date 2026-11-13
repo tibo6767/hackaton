@@ -1,8 +1,9 @@
 import { Component, input, output, signal } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  imports: [TitleCasePipe],
+  imports: [TitleCasePipe, MatIconModule],
   selector: 'app-header',
   styleUrl: './header.css',
   templateUrl: './header.html',
