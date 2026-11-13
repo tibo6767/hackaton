@@ -23,6 +23,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "f3d.wasm",
+                "input": "node_modules/f3d/dist",
+                "output": "/"
               }
             ],
             "styles": [
