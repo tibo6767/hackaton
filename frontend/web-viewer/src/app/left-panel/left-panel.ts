@@ -1,5 +1,5 @@
 import {TitleCasePipe} from '@angular/common';
-import {Component, signal} from '@angular/core';
+import {Component, output, signal} from '@angular/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 
@@ -21,6 +21,12 @@ export class LeftPanel {
   ];
   openFolders = signal<Set<string>>(new Set());
   activeItem = signal<string | null>(null);
+  modelSelected = output<string>();
+
+  select(item: string) {
+    this.activeItem.set(item);
+    this.modelSelected.emit(item);
+  }
 
   toggle(name: string) {
     this.openFolders.update(set => {

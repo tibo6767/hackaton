@@ -12,7 +12,7 @@
           mat-list-item
           class="sub-item"
           href="#{{item}}"
-          (click)="$event.preventDefault(); activeItem.set(item)"
+          (click)="$event.preventDefault(); select(item)"
           [activated]="activeItem() === item"
         >{{ item | titlecase }}</a>
       }

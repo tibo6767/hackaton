@@ -9,7 +9,10 @@ import { LeftPanel } from './left-panel/left-panel';
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
+  host: { '[attr.data-theme]': 'theme()' },
 })
 export class App {
   protected readonly title = signal('web-viewer');
+  protected readonly theme = signal<'light' | 'dark'>('dark');
+  protected readonly selectedModel = signal<string | null>(null);
 }
