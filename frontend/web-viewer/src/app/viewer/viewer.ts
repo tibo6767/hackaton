@@ -16,7 +16,7 @@ export class Viewer implements AfterViewInit {
 
     const module = await f3d();
 
-    const engine = module.Engine.create(`#${canvas.id}`);
+    const engine = module.Engine.create();
 
     const options = engine.getOptions();
     options.toggle('render.grid.enable');
