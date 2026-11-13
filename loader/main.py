@@ -1,9 +1,11 @@
 import json
 import requests
+import os
+from fastapi import FastAPI
 
 
 projects_url = 'https://raw.githubusercontent.com/ToxSam/open-source-3d-assets/main/data/projects.json'
-assets_url = 'https://github.com/ToxSam/open-source-3D-assets/tree/main/data/'
+assets_url = 'https://raw.githubusercontent.com/ToxSam/open-source-3d-assets/main/data/'
 
 def download_file(url, file_path):
     response = requests.get(url)
@@ -13,38 +15,49 @@ def download_file(url, file_path):
         print(f'File {file_path} downloaded successfully')
     else:
         print('Failed to download file')
+    return file_path
 
 def load_json(file_path):
     with open(file_path, 'r') as file:
         data = json.load(file)
     return data
 
-def print_keys(data, keys):
-    for item in data:
-        for key in keys:
-            if key in item:
-                print(f'{key}: {item[key]}')
-        print('---')
 
-def get_project(projects, project_name):
+projects_data = {}
+assets_data = {}
+
+app = FastAPI()
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@app.get("/projects")
+async def get_projects():
+    download_file(projects_url, 'projects.json')
+    projects = load_json('projects.json')
     for project in projects:
-        if project['name'] == project_name:
-            return project
-    return None
+        projects_data[project['name']] = {
+        'description': project['description'],
+        'url': assets_url + project['asset_data_file']
+    }
+    return projects_data
 
-def get_asset_json(project):
-    asset_url = assets_url + project["asset_data_file"]
-    print(f'Downloading : {asset_url}')
-    download_file(asset_url, project["id"] + ".json")
+@app.post("/assets")
+def select_project(name: str):
+    url = projects_data[name]['url']
+    file_path = download_file(url, os.path.basename(url))
+    assets = load_json(file_path)
+    for asset in assets:
+        assets_data[asset['name']] = {
+            'description' : asset['description'],
+            'thumbnail_url' : asset['thumbnail_url'],
+            'url' : asset['model_file_url']
+        }
+    return assets_data
 
-projects = load_json('projects.json')
-
-print_keys(projects, ['name', 'description'])
-
-selected_project = input('Enter the name of the project you want to select: ')
-project = get_project(projects, selected_project)
-
-print(project["github_url"])
-
-get_asset_json(project)
-
+@app.post("/model")
+def select_model(name: str):
+    url = assets_data[name]['url']
+    file_path = download_file(url, os.path.basename(url))
+    return file_path
