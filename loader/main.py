@@ -48,6 +48,7 @@ def select_project(name: str):
     url = projects_data[name]['url']
     file_path = download_file(url, os.path.basename(url))
     assets = load_json(file_path)
+    assets_data = {}
     for asset in assets:
         assets_data[asset['name']] = {
             'description' : asset['description'],
