@@ -21,10 +21,10 @@ export class LeftPanel implements OnInit {
 
   openFolders = signal<Set<string>>(new Set());
   activeItem = signal<string | null>(null);
-  modelSelected = output<string>();
+  modelSelected = output<Asset>();
 
-  select(item: string) {
-    this.activeItem.set(item);
+  select(item: Asset) {
+    this.activeItem.set(item.name);
     this.modelSelected.emit(item);
   }
   ngOnInit() {

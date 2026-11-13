@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { Viewer } from './viewer/viewer';
 import { Header } from './header/header';
 import { LeftPanel } from './left-panel/left-panel';
+import { Asset } from './services/projects.service';
 
 @Component({
   imports: [RouterOutlet, Viewer, Header, LeftPanel],
@@ -14,5 +15,5 @@ import { LeftPanel } from './left-panel/left-panel';
 export class App {
   protected readonly title = signal('web-viewer');
   protected readonly theme = signal<'light' | 'dark'>('dark');
-  protected readonly selectedModel = signal<string | null>(null);
+  protected readonly selectedModel = signal<Asset | null>(null);
 }

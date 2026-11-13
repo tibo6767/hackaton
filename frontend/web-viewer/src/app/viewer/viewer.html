@@ -1,1 +1,6 @@
-<canvas #viewerCanvas style="width:100%;height:100%;display:block" id="f3d-canvas"></canvas>
+<canvas #viewerCanvas id="canvas" tabindex="0" (contextmenu)="$event.preventDefault()"></canvas>
+@if (!url()) {
+<div class="overlay">Sélectionne un asset dans le panneau de gauche</div>
+} @else if (status()) {
+<div class="overlay">{{ status() }}</div>
+}
