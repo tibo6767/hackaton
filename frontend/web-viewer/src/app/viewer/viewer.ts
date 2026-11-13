@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import f3d from 'f3d';
 
 @Component({
   imports: [],
@@ -6,4 +7,36 @@ import { Component } from '@angular/core';
   styleUrl: './viewer.css',
   templateUrl: './viewer.html',
 })
-export class Viewer {}
+export class Viewer implements AfterViewInit {
+  @ViewChild('viewerCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+
+  async ngAfterViewInit() {
+    const canvas = this.canvasRef.nativeElement;
+    canvas.id = 'f3d-canvas';
+
+    const module = await f3d();
+
+    const engine = module.Engine.create(`#${canvas.id}`);
+
+    const options = engine.getOptions();
+    options.toggle('render.grid.enable');
+    options.setAsString('model.coloring', 'direct');
+    options.toggle('ui.scalar_bar');
+    options.setAsString('scene.up_direction', '+Z');
+
+    // Dimensionner le canvas via getDPIScale(), identique au web component interne
+    const win = engine.getWindow();
+    const scale = win.getDPIScale();
+    win.setSize(Math.round(scale * canvas.clientWidth), Math.round(scale * canvas.clientHeight));
+
+    const response = await fetch('https://f3d.app/data/f3d.vtp');
+    const model = new Uint8Array(await response.arrayBuffer());
+
+    const scene = engine.getScene();
+    scene.clear();
+    scene.addBuffer(model);
+    win.getCamera().resetToBounds(0.9);
+    win.render();
+    engine.getInteractor().start();
+  }
+}
