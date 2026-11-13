@@ -18,4 +18,14 @@ describe('Header', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should switch theme when the button is clicked', () => {
+    const button = fixture.nativeElement.querySelector('.theme-toggle');
+
+    button.click();
+    expect(component.isDark()).toBe(false);
+
+    button.click();
+    expect(component.isDark()).toBe(true);
+  });
 });

@@ -1,1 +1,25 @@
-<p>left-panel works!</p>
+<mat-nav-list>
+  <h3 matSubheader>Projects</h3>
+
+  @if (loading()) {
+  <div class="info">Chargement...</div>
+  } @else if (error()) {
+  <div class="info error">{{ error() }}</div>
+  } @else {
+  @for (project of projects(); track project.name) {
+  <a mat-list-item href="#" [title]="project.description" (click)="$event.preventDefault(); toggle(project.name)">
+    <span matListItemTitle>{{ project.name }}</span>
+  </a>
+
+  @if (isOpen(project.name)) {
+  @if (loadingAssets().has(project.name)) {
+  <div class="info sub-item">Chargement...</div>
+  }
+  @for (item of assets()[project.name]; track item.name) {
+  <a mat-list-item class="sub-item" href="#" (click)="$event.preventDefault(); select(item.name)"
+    [activated]="activeItem() === item.name">{{ item.name }}</a>
+  }
+  }
+  }
+  }
+</mat-nav-list>
