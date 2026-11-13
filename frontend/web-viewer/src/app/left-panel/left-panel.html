@@ -1,1 +1,21 @@
-<p>left-panel works!</p>
+<mat-nav-list>
+  <h3 matSubheader>Projects</h3>
+
+  @for (project of projects; track project.name) {
+    <a mat-list-item href="#" (click)="$event.preventDefault(); toggle(project.name)">
+      <span matListItemTitle>{{ project.name | titlecase }}</span>
+    </a>
+
+    @if (isOpen(project.name)) {
+      @for (item of project.items; track item) {
+        <a
+          mat-list-item
+          class="sub-item"
+          href="#{{item}}"
+          (click)="$event.preventDefault(); activeItem.set(item)"
+          [activated]="activeItem() === item"
+        >{{ item | titlecase }}</a>
+      }
+    }
+  }
+</mat-nav-list>
