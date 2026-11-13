@@ -58,6 +58,4 @@ def select_project(name: str):
 
 @app.post("/model")
 def select_model(name: str):
-    url = assets_data[name]['url']
-    file_path = download_file(url, os.path.basename(url))
-    return file_path
+    return assets_data[name]['url']
