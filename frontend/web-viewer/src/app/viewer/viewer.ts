@@ -24,6 +24,7 @@ export class Viewer implements AfterViewInit {
     options.toggle('ui.scalar_bar');
     options.setAsString('scene.up_direction', '+Z');
 
+    const win = engine.getWindow();
     const response = await fetch('https://f3d.app/data/f3d.vtp');
     const model = new Uint8Array(await response.arrayBuffer());
 
