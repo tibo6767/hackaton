@@ -1,24 +1,25 @@
-import {TitleCasePipe} from '@angular/common';
-import {Component, output, signal} from '@angular/core';
-import {MatIconModule} from '@angular/material/icon';
-import {MatListModule} from '@angular/material/list';
-
-
-interface Project {
-  name:string,
-  items:string[]
-}
+import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { Asset, Project, projectService } from '../services/projects.service';
 
 @Component({
-  imports: [MatListModule, MatIconModule, TitleCasePipe],
+  imports: [MatListModule, MatIconModule],
   selector: 'app-left-panel',
   styleUrl: './left-panel.css',
   templateUrl: './left-panel.html',
 })
-export class LeftPanel {
-  projects: Project[] = [
-    {name:'Poject1',items:['modele1','model2']},{name:'Project2',items:['model1']},{name:'Project3',items:['model1','model2','model3']}
-  ];
+export class LeftPanel implements OnInit {
+  private projectService = inject(projectService);
+
+  projects = signal<Project[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
+
+  // Assets chargés par projet (cache), et projets en cours de chargement
+  assets = signal<Record<string, Asset[]>>({});
+  loadingAssets = signal<Set<string>>(new Set());
+
   openFolders = signal<Set<string>>(new Set());
   activeItem = signal<string | null>(null);
   modelSelected = output<string>();
@@ -28,17 +29,47 @@ export class LeftPanel {
     this.modelSelected.emit(item);
   }
 
+  ngOnInit() {
+    this.projectService.getProjects().subscribe({
+      next: data => {
+        this.projects.set(data);
+        this.loading.set(false);
+      },
+      error: err => {
+        console.error(err);
+        this.error.set('Impossible de charger les projets');
+        this.loading.set(false);
+      },
+    });
+  }
+
   toggle(name: string) {
     this.openFolders.update(set => {
       const next = new Set(set);
       next.has(name) ? next.delete(name) : next.add(name);
       return next;
     });
+
+    if (this.isOpen(name) && !this.assets()[name]) {
+      this.loadAssets(name);
+    }
   }
 
   isOpen(name: string) {
     return this.openFolders().has(name);
   }
 
-
+  private loadAssets(name: string) {
+    this.loadingAssets.update(s => new Set(s).add(name));
+    this.projectService.getAssets(name).subscribe({
+      next: list => this.assets.update(a => ({ ...a, [name]: list })),
+      error: err => console.error(err),
+      complete: () =>
+        this.loadingAssets.update(s => {
+          const next = new Set(s);
+          next.delete(name);
+          return next;
+        }),
+    });
+  }
 }
