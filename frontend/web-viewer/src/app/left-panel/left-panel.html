@@ -16,7 +16,7 @@
   <div class="info sub-item">Chargement...</div>
   }
   @for (item of assets()[project.name]; track item.name) {
-  <a mat-list-item class="sub-item" href="#" (click)="$event.preventDefault(); select(item.name)"
+  <a mat-list-item class="sub-item" href="#" (click)="$event.preventDefault(); preview(item)"
     [activated]="activeItem() === item.name">{{ item.name }}</a>
   }
   }

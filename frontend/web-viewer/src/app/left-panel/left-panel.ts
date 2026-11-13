@@ -1,7 +1,9 @@
 import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { Asset, Project, projectService } from '../services/projects.service';
+import { ModelPreviewDialog } from '../model-preview-dialog/model-preview-dialog';
 
 @Component({
   imports: [MatListModule, MatIconModule],
@@ -11,6 +13,7 @@ import { Asset, Project, projectService } from '../services/projects.service';
 })
 export class LeftPanel implements OnInit {
   private projectService = inject(projectService);
+  private dialog = inject(MatDialog);
 
   projects = signal<Project[]>([]);
   loading = signal(true);
@@ -27,6 +30,19 @@ export class LeftPanel implements OnInit {
   select(item: string) {
     this.activeItem.set(item);
     this.modelSelected.emit(item);
+  }
+
+  // Ouvre l'aperçu du modèle ; il n'est sélectionné que si l'utilisateur confirme
+  preview(asset: Asset) {
+    this.dialog
+      .open<ModelPreviewDialog, Asset, boolean>(ModelPreviewDialog, {
+        data: asset,
+        panelClass: 'model-preview-dialog',
+      })
+      .afterClosed()
+      .subscribe(confirmed => {
+        if (confirmed) this.select(asset.name);
+      });
   }
 
   ngOnInit() {
