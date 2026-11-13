@@ -1,24 +1,17 @@
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 56px;
-  padding: 0 16px;
+  justify-content: center;
+  height: 64px;
   background: #1e1e1e;
-  color: white;
+  border-bottom: 1px solid #333;
 }
 
 h1 {
   margin: 0;
+  color: white;
   font-family: Arial, sans-serif;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 500;
-  letter-spacing: 0.3px;
-}
-
-.upload {
-  padding: 8px 16px;
-  border-radius: 6px;
-  background: #4f8cff;
-  cursor: pointer;
+  letter-spacing: 1px;
 }
