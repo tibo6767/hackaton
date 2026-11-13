@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { Asset, Project, projectService } from '../services/projects.service';
@@ -22,6 +22,21 @@ export class LeftPanel implements OnInit {
   openFolders = signal<Set<string>>(new Set());
   activeItem = signal<string | null>(null);
   modelSelected = output<Asset>();
+
+  // Mode d'affichage : un fichier à la fois, ou grille des fichiers d'un projet
+  mode = input<'single' | 'grid'>('single');
+  modeChange = output<'single' | 'grid'>();
+  activeProject = signal<string | null>(null);
+  projectSelected = output<string>();
+
+  clickProject(name: string) {
+    if (this.mode() === 'grid') {
+      this.activeProject.set(name);
+      this.projectSelected.emit(name);
+    } else {
+      this.toggle(name);
+    }
+  }
 
   select(item: Asset) {
     this.activeItem.set(item.name);

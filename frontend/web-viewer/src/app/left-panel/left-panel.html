@@ -1,5 +1,17 @@
 <mat-nav-list>
-  <h3 matSubheader>Projects</h3>
+  <div class="panel-header">
+    <h3 matSubheader>Projects</h3>
+    <div class="mode-switch">
+      <button [class.selected]="mode() === 'single'" (click)="modeChange.emit('single')" title="Un fichier à la fois"
+        aria-label="Mode un fichier">
+        <mat-icon>view_in_ar</mat-icon>
+      </button>
+      <button [class.selected]="mode() === 'grid'" (click)="modeChange.emit('grid')" title="Grille de fichiers"
+        aria-label="Mode grille">
+        <mat-icon>grid_view</mat-icon>
+      </button>
+    </div>
+  </div>
 
   @if (loading()) {
   <div class="info">Chargement...</div>
@@ -7,11 +19,12 @@
   <div class="info error">{{ error() }}</div>
   } @else {
   @for (project of projects(); track project.name) {
-  <a mat-list-item href="#" [title]="project.description" (click)="$event.preventDefault(); toggle(project.name)">
+  <a mat-list-item href="#" [title]="project.description" (click)="$event.preventDefault(); clickProject(project.name)"
+    [activated]="mode() === 'grid' && activeProject() === project.name">
     <span matListItemTitle>{{ project.name }}</span>
   </a>
 
-  @if (isOpen(project.name)) {
+  @if (mode() === 'single' && isOpen(project.name)) {
   @if (loadingAssets().has(project.name)) {
   <div class="info sub-item">Chargement...</div>
   }
