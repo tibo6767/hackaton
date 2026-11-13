@@ -12,10 +12,7 @@
   --active: #3a3f4b;
 }
 
-/* Light mode: three distinct greys so header, panel and content separate.
-   :root:has(...) makes the values reach dialogs too, which Material renders
-   outside <app-root> (in the overlay container under <body>). */
-:root:has(app-root[data-theme="light"]),
+/* Light mode: three distinct greys so header, panel and content separate */
 app-root[data-theme="light"] {
   --bg: #fafafa;
   --surface: #d6d6d6;
@@ -30,11 +27,4 @@ app-root[data-theme="light"] {
 
 body {
   margin: 0;
-}
-
-/* Dialog d'aperçu des modèles (panelClass dans left-panel.ts) */
-.model-preview-dialog {
-  --mat-dialog-container-color: var(--surface);
-  --mat-dialog-subhead-color: var(--text-strong);
-  --mat-dialog-supporting-text-color: var(--text);
 }
