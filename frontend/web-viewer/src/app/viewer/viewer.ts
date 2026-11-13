@@ -24,11 +24,6 @@ export class Viewer implements AfterViewInit {
     options.toggle('ui.scalar_bar');
     options.setAsString('scene.up_direction', '+Z');
 
-    // Dimensionner le canvas via getDPIScale(), identique au web component interne
-    const win = engine.getWindow();
-    const scale = win.getDPIScale();
-    win.setSize(Math.round(scale * canvas.clientWidth), Math.round(scale * canvas.clientHeight));
-
     const response = await fetch('https://f3d.app/data/f3d.vtp');
     const model = new Uint8Array(await response.arrayBuffer());
 
