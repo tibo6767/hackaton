@@ -17,6 +17,23 @@ html {
       density: 0,
     )
   );
+
+  // Angles droits partout : tous les arrondis Material à 0
+  --mat-sys-corner-extra-small: 0;
+  --mat-sys-corner-extra-small-top: 0;
+  --mat-sys-corner-small: 0;
+  --mat-sys-corner-medium: 0;
+  --mat-sys-corner-large: 0;
+  --mat-sys-corner-large-end: 0;
+  --mat-sys-corner-large-start: 0;
+  --mat-sys-corner-large-top: 0;
+  --mat-sys-corner-extra-large: 0;
+  --mat-sys-corner-extra-large-top: 0;
+  --mat-sys-corner-full: 0;
+
+  // Liste : fond de l'item actif/survolé sans arrondi
+  --mat-list-active-indicator-shape: 0;
+  --mat-list-list-item-container-shape: 0;
 }
 
 body {
