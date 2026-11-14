@@ -1,8 +1,11 @@
 import json
 import requests
 import os
+import threading
+
 from fastapi import FastAPI
 from turntable_video import generate_video
+
 
 
 projects_url = 'https://raw.githubusercontent.com/ToxSam/open-source-3d-assets/main/data/projects.json'
@@ -35,7 +38,7 @@ assets_data = {}
 
 app = FastAPI()
 
-
+video_lock = threading.Lock()
 
 @app.get("/")
 async def root():
@@ -69,7 +72,8 @@ def select_project(name: str):
 
 @app.post("/model")
 def select_model(name: str):
-    video = generate_video(assets_data[name]['url'], preview_directory)
+    with video_lock:
+        video = generate_video(assets_data[name]['url'], preview_directory)
     content = {
         "url" : assets_data[name]['url'],
         "preview" : video
