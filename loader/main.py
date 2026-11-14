@@ -2,6 +2,7 @@ import json
 import requests
 import os
 from fastapi import FastAPI
+from turntable_video import generate_video
 
 
 projects_url = 'https://raw.githubusercontent.com/ToxSam/open-source-3d-assets/main/data/projects.json'
@@ -45,6 +46,7 @@ async def get_projects():
 
 @app.post("/assets")
 def select_project(name: str):
+    global assets_data
     url = projects_data[name]['url']
     file_path = download_file(url, os.path.basename(url))
     assets = load_json(file_path)
@@ -59,4 +61,9 @@ def select_project(name: str):
 
 @app.post("/model")
 def select_model(name: str):
-    return assets_data[name]['url']
+    video = generate_video(assets_data[name]['url'])
+    content = {
+        "url" : assets_data[name]['url'],
+        "preview" : video
+    }
+    return content
