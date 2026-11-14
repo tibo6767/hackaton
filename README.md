@@ -18,13 +18,11 @@ renders a turntable preview video with F3D, which the frontend then plays.
 .
 ├── frontend/web-viewer/   # Angular app (grid, viewer, side panel)
 │   └── proxy.conf.mjs     # Dev proxy: /api -> FastAPI, /data -> generated files
-├── loader/                # FastAPI backend
-│   ├── main.py            # API endpoints
-│   ├── turntable_video.py # Turntable video generation with F3D
-│   └── f3d_extras/        # F3D helpers (download, camera, ffmpeg encoding)
-└── data/                  # Generated at runtime (git-ignored)
-    ├── json/              # Downloaded project/asset metadata
-    └── preview/           # Rendered .mp4 previews
+└── loader/                # FastAPI backend
+    ├── main.py            # API endpoints
+    ├── requirements.txt   # Python dependencies
+    ├── turntable_video.py # Turntable video generation with F3D
+    └── f3d_extras/        # F3D helpers (download, camera, ffmpeg encoding)
 ```
 
 ## Getting started
@@ -47,7 +45,7 @@ renders a turntable preview video with F3D, which the frontend then plays.
    ```sh
    python -m venv .venv
    source .venv/bin/activate
-   pip install "fastapi[standard]" f3d requests numpy tqdm
+   pip install -r loader/requirements.txt
    ```
 
 3. Install the frontend dependencies
@@ -56,9 +54,6 @@ renders a turntable preview video with F3D, which the frontend then plays.
    npm install
    ```
 
-> **Nix users:** a dev shell is available in `loader/flake.nix` (`nix develop`), but it
-> doesn't include `f3d`, `numpy` or `tqdm` yet.
-
 ## Running
 
 Start both services in two separate terminals.
@@ -66,7 +61,7 @@ Start both services in two separate terminals.
 **Backend** (API on http://localhost:8000):
 ```sh
 cd loader
-fastapi dev main.py
+uvicorn main:app --reload
 ```
 
 **Frontend** (app on http://localhost:4200):

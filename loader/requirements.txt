@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+requests
+numpy
+tqdm
+f3d>=3.0
