@@ -13,7 +13,7 @@ from f3d_extras import (
 )
 
 
-def generate_video(model_fn):
+def generate_video(model_fn, folder_path):
     resolution = 640, 360
     initial_camera_position = 1, 1, 1
     camera_zoom_factor = 1.2
@@ -23,7 +23,7 @@ def generate_video(model_fn):
     #model_fn = "https://github.com/KhronosGroup/glTF-Sample-Models/raw/main/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb"
     #video_path = Path(gettempdir()) / "f3d-turntable.mp4"
     #model_fn = "https://raw.githubusercontent.com/ToxSam/cc0-models-Polygonal-Mind/main/projects/MomusPark/Bench_01_Art.glb"
-    video_path = Path(model_fn).stem + ".mp4"
+    video_path = folder_path + '/' + Path(model_fn).stem + ".mp4"
 
     if Path(video_path).exists():
         return video_path
