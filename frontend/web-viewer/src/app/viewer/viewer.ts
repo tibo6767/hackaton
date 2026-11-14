@@ -1,6 +1,18 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, effect, input, signal } from '@angular/core';
 import f3d from 'f3d';
 
+type ColoringMode    = 'material' | 'scivis' | 'direct';
+type AntialiasingMode = 'none' | 'fxaa';
+
+export interface ViewerSettings {
+  ao:           boolean;
+  toneMapping:  boolean;
+  antialiasing: AntialiasingMode;
+  showEdges:    boolean;
+  light:        boolean;
+  grid:         boolean;
+}
+
 @Component({
   imports: [],
   selector: 'app-viewer',
@@ -10,82 +22,87 @@ import f3d from 'f3d';
 export class Viewer implements AfterViewInit, OnDestroy {
   @ViewChild('viewerCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  /** URL du modèle à afficher (glb, gltf, vrm, stl, obj...) */
-  url = input<string | null>(null);
-
-  status = signal<string | null>(null);
+  url       = input<string | null>(null);
+  status    = signal<string | null>(null);
+  panelOpen = signal(false);
+  settings  = signal<ViewerSettings>({
+    ao: false, toneMapping: false, antialiasing: 'none',
+    showEdges: false, light: false, grid: true,
+  });
 
   private module: any;
   private engine: any;
   private resizeObserver?: ResizeObserver;
-  private ready = signal(false);
+  private engineReady = false;
   private loadId = 0;
 
   constructor() {
-    // Recharge le modèle quand l'URL change (une fois le moteur prêt)
-    effect(() => {
-      const url = this.url();
-      if (this.ready() && url) this.load(url);
-    });
+    effect(() => { const url = this.url(); if (this.engineReady && url) this.load(url); });
   }
 
   async ngAfterViewInit() {
     const canvas = this.canvasRef.nativeElement;
-    // f3d dessine toujours dans le canvas d'id "canvas" (en dur dans le wasm)
-    this.module = await f3d({ canvas, locateFile: (path: string) => `/${path}` });
+    this.module = await f3d({ canvas, locateFile: (p: string) => `/${p}` });
     this.module.Engine.autoloadPlugins();
     this.engine = this.module.Engine.create();
-
-    const options = this.engine.getOptions();
-    options.toggle('render.grid.enable');
-    options.setAsString('scene.up_direction', '+Y');
-
-    // Garde la taille du rendu synchronisée avec le conteneur
+    this.engine.getOptions().setAsString('scene.up_direction', '+Y');
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
-
     this.engine.getInteractor().start();
-    this.ready.set(true);
+    this.engineReady = true;
+    this.applySettings();
+    const url = this.url();
+    if (url) this.load(url);
   }
 
-  ngOnDestroy() {
-    this.resizeObserver?.disconnect();
+  ngOnDestroy() { this.resizeObserver?.disconnect(); }
+
+  updateSetting<K extends keyof ViewerSettings>(key: K, value: ViewerSettings[K]) {
+    this.settings.update(s => ({ ...s, [key]: value }));
+    this.applySettings();
+  }
+
+  private applySettings() {
+    if (!this.engine) return;
+    const opts = this.engine.getOptions();
+    const s = this.settings();
+    const sync = (name: string, v: boolean) => { if (Boolean(opts.get(name)) !== v) opts.toggle(name); };
+    sync('render.effect.ambient_occlusion', s.ao);
+    sync('render.effect.tone_mapping',      s.toneMapping);
+    sync('render.show_edges',               s.showEdges);
+    sync('render.grid.enable',              s.grid);
+    sync('render.hdri.ambient',             s.light);
+    opts.setAsString('render.effect.antialiasing.mode', s.antialiasing);
+    const win = this.engine.getWindow();
+    win.render();
   }
 
   private resize() {
     if (!this.engine) return;
-    const canvas = this.canvasRef.nativeElement;
-    const w = Math.max(1, canvas.clientWidth);
-    const h = Math.max(1, canvas.clientHeight);
-    this.engine.getWindow().setSize(w, h).render();
+    const c = this.canvasRef.nativeElement;
+    this.engine.getWindow().setSize(Math.max(1, c.clientWidth), Math.max(1, c.clientHeight)).render();
   }
 
   private async load(url: string) {
     const id = ++this.loadId;
-    this.status.set('Chargement du modèle...');
+    this.status.set('Chargement...');
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = new Uint8Array(await response.arrayBuffer());
-      if (id !== this.loadId) return; // une autre sélection a eu lieu entre-temps
-
-      // f3d choisit le lecteur selon l'extension ; un .vrm est un glb
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = new Uint8Array(await res.arrayBuffer());
+      if (id !== this.loadId) return;
       let ext = url.split('?')[0].split('.').pop()?.toLowerCase() ?? 'glb';
       if (ext === 'vrm') ext = 'glb';
       const path = `/model.${ext}`;
       this.module.FS.writeFile(path, data);
-
       const scene = this.engine.getScene();
       scene.clear();
       scene.add(path);
-
-      const win = this.engine.getWindow();
-      win.getCamera().resetToBounds(0.9);
-      win.render();
+      this.engine.getWindow().getCamera().resetToBounds(0.9);
+      this.engine.getWindow().render();
       this.status.set(null);
     } catch (err) {
-      console.error(err);
       if (id === this.loadId) this.status.set('Impossible de charger ce modèle');
     }
   }
