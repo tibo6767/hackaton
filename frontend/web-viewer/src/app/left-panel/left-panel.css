@@ -37,3 +37,43 @@ a[mat-list-item] {
 mat-icon {
   color: var(--text-muted);
 }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 8px;
+}
+
+.mode-switch {
+  display: flex;
+  gap: 4px;
+}
+
+.mode-switch button {
+  display: flex;
+  padding: 4px;
+  cursor: pointer;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+
+.mode-switch button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.mode-switch button:hover {
+  background: var(--hover);
+}
+
+.mode-switch button.selected {
+  background: var(--active);
+  border-color: var(--border);
+}
+
+.mode-switch button.selected mat-icon {
+  color: var(--text-strong);
+}
