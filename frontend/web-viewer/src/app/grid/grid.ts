@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, input, output, signal } from '@ang
 import { MatIconModule } from '@angular/material/icon';
 import { Asset, projectService } from '../services/projects.service';
 
-const PAGE_SIZE = 8; // 2 lignes de 4
+const PAGE_SIZE = 8;
 
 @Component({
   imports: [MatIconModule],
@@ -21,6 +21,11 @@ export class Grid {
   error = signal<string | null>(null);
   page = signal(0);
 
+  hovered = signal<string | null>(null);
+  previews = signal<Record<string, string>>({});
+  previewLoading = signal<Set<string>>(new Set());
+  private hoverTimer: ReturnType<typeof setTimeout> | null = null;
+
   pageCount = computed(() => Math.max(1, Math.ceil(this.assets().length / PAGE_SIZE)));
   visible = computed(() => {
     const start = this.page() * PAGE_SIZE;
@@ -28,7 +33,6 @@ export class Grid {
   });
 
   constructor() {
-    // Recharge les assets quand le projet sélectionné change
     effect(onCleanup => {
       const name = this.project();
       this.assets.set([]);
@@ -48,6 +52,43 @@ export class Grid {
       });
       onCleanup(() => sub.unsubscribe());
     });
+  }
+
+  onHover(asset: Asset) {
+    this.hovered.set(asset.name);
+    this.clearHoverTimer();
+    if (this.previews()[asset.name] || this.previewLoading().has(asset.name)) return;
+
+    this.hoverTimer = setTimeout(() => this.loadPreview(asset.name), 300);
+  }
+
+  onLeave() {
+    this.hovered.set(null);
+    this.clearHoverTimer();
+  }
+
+  private loadPreview(name: string) {
+    this.previewLoading.update(s => new Set(s).add(name));
+    const done = () =>
+      this.previewLoading.update(s => {
+        const next = new Set(s);
+        next.delete(name);
+        return next;
+      });
+
+    this.projectService.getPreviewUrl(name).subscribe({
+      next: url => this.previews.update(p => ({ ...p, [name]: url })),
+      error: err => {
+        console.error(err);
+        done();
+      },
+      complete: done,
+    });
+  }
+
+  private clearHoverTimer() {
+    if (this.hoverTimer) clearTimeout(this.hoverTimer);
+    this.hoverTimer = null;
   }
 
   prev() {

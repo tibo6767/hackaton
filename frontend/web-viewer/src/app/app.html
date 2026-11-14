@@ -3,7 +3,6 @@
     <app-left-panel [mode]="mode()" (modeChange)="mode.set($event)" (modelSelected)="selectedModel.set($event)"
         (projectSelected)="selectedProject.set($event)" />
     <main class="content">
-        <!-- Le viewer reste monté (juste caché) pour ne pas recharger le moteur f3d à chaque changement de mode -->
         <app-viewer [class.hidden]="mode() !== 'single'" [url]="selectedModel()?.url ?? null" />
         @if (mode() === 'grid') {
         <app-grid [project]="selectedProject()" (assetOpened)="openAsset($event)" />

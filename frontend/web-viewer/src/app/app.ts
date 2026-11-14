@@ -20,7 +20,6 @@ export class App {
   protected readonly mode = signal<'single' | 'grid'>('single');
   protected readonly selectedProject = signal<string | null>(null);
 
-  // Clic sur une vignette de la grille : on ouvre le modèle en mode classique
   protected openAsset(asset: Asset) {
     this.selectedModel.set(asset);
     this.mode.set('single');

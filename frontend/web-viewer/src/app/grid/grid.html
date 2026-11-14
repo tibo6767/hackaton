@@ -7,12 +7,18 @@
 } @else {
 <div class="grid">
   @for (asset of visible(); track asset.name) {
-  <button class="tile" [title]="asset.description" (click)="assetOpened.emit(asset)">
+  <button class="tile" [title]="asset.description" (click)="assetOpened.emit(asset)"
+    (mouseenter)="onHover(asset)" (mouseleave)="onLeave()">
     <div class="thumb">
-      @if (asset.thumbnail_url) {
+      @if (hovered() === asset.name && previews()[asset.name]; as src) {
+      <video [src]="src" autoplay loop playsinline [muted]="true"></video>
+      } @else if (asset.thumbnail_url) {
       <img [src]="asset.thumbnail_url" [alt]="asset.name" loading="lazy" />
       } @else {
       <mat-icon>view_in_ar</mat-icon>
+      }
+      @if (hovered() === asset.name && previewLoading().has(asset.name)) {
+      <span class="preview-status">Génération de l'aperçu...</span>
       }
     </div>
     <span class="name">{{ asset.name }}</span>

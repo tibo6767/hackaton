@@ -23,7 +23,6 @@ export class LeftPanel implements OnInit {
   activeItem = signal<string | null>(null);
   modelSelected = output<Asset>();
 
-  // Mode d'affichage : un fichier à la fois, ou grille des fichiers d'un projet
   mode = input<'single' | 'grid'>('single');
   modeChange = output<'single' | 'grid'>();
   activeProject = signal<string | null>(null);
