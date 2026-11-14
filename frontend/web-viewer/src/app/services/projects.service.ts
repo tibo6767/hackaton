@@ -20,7 +20,6 @@ export class projectService {
     private http = inject(HttpClient);
     private apiUrl = '/api';
 
-    // L'API renvoie un objet { "nom": {...} } : on le convertit en tableau
     getProjects(): Observable<Project[]> {
         return this.http
             .get<Record<string, Omit<Project, 'name'>>>(`${this.apiUrl}/projects`)
@@ -34,4 +33,18 @@ export class projectService {
             })
             .pipe(map(data => Object.entries(data).map(([name, a]) => ({ name, ...a }))));
     }
+
+    getPreviewUrl(modelName: string): Observable<string> {
+        return this.http
+            .post<{ url: string; preview: string }>(`${this.apiUrl}/model`, null, {
+                params: { name: modelName },
+            })
+            .pipe(map(res => dataUrl(res.preview)));
+    }
+}
+
+// Convertit un chemin renvoyé par l'API ("../data/preview/X.mp4") en URL servie par le proxy
+export function dataUrl(apiPath: string): string {
+    const rel = apiPath.replace(/\\/g, '/').split('/data/').pop()!.replace(/^\/+/, '');
+    return '/data/' + rel.split('/').map(encodeURIComponent).join('/');
 }

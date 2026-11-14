@@ -2,10 +2,17 @@ import json
 import requests
 import os
 from fastapi import FastAPI
+from turntable_video import generate_video
 
 
 projects_url = 'https://raw.githubusercontent.com/ToxSam/open-source-3d-assets/main/data/projects.json'
 assets_url = 'https://raw.githubusercontent.com/ToxSam/open-source-3d-assets/main/data/'
+
+json_directory = '../data/json'
+preview_directory = '../data/preview'
+
+os.makedirs(json_directory, exist_ok=True)
+os.makedirs(preview_directory, exist_ok=True)
 
 def download_file(url, file_path):
     response = requests.get(url)
@@ -28,14 +35,16 @@ assets_data = {}
 
 app = FastAPI()
 
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
 @app.get("/projects")
 async def get_projects():
-    download_file(projects_url, 'projects.json')
-    projects = load_json('projects.json')
+    file_path = download_file(projects_url, json_directory + '/projects.json')
+    projects = load_json(file_path)
     for project in projects:
         projects_data[project['name']] = {
         'description': project['description'],
@@ -45,8 +54,9 @@ async def get_projects():
 
 @app.post("/assets")
 def select_project(name: str):
+    global assets_data
     url = projects_data[name]['url']
-    file_path = download_file(url, os.path.basename(url))
+    file_path = download_file(url, json_directory + '/' + os.path.basename(url))
     assets = load_json(file_path)
     assets_data = {}
     for asset in assets:
@@ -59,4 +69,9 @@ def select_project(name: str):
 
 @app.post("/model")
 def select_model(name: str):
-    return assets_data[name]['url']
+    video = generate_video(assets_data[name]['url'], preview_directory)
+    content = {
+        "url" : assets_data[name]['url'],
+        "preview" : video
+    }
+    return content
