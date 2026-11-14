@@ -1,0 +1,58 @@
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 64px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  width: 18px;
+  height: 36px;
+  background: var(--text-strong);
+  mask: url(/logo.svg) no-repeat center / contain;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.model-name {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+}
+
+h1 {
+  margin: 0;
+  color: var(--text-strong);
+  font-family: Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.theme-toggle {
+  position: absolute;
+  right: 16px;
+  display: flex;
+  padding: 6px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: var(--hover);
+}
+
+.theme-toggle mat-icon {
+  color: var(--text-strong);
+}

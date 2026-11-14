@@ -1,0 +1,9 @@
+<!-- F3D logo (from github.com/f3d-app/f3d, resources/logo-mono.svg).
+     Used as a CSS mask in the header: only the shape matters, the colour comes from CSS. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 -5 5 10"
+     fill="none" stroke="black" stroke-width="0.2" stroke-linejoin="round" stroke-linecap="round">
+  <path fill="black" d="M2,-4.5 L-2,0.5 L-2,-1.5 L2,-4.5z" />
+  <path fill="black" d="M0,-0.5 L2,1.5 L2,-0.5 L0,-0.5z" />
+  <path d="M0.4,-0.5 L2,-4.5 L-2,-1.5 L-2,0.5 L-0.4,0.5" />
+  <path d="M0,-0.5 L-2,4.5 L2,1.5 L2,-0.5 L0,-0.5z" />
+</svg>

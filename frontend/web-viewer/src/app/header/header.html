@@ -1,0 +1,14 @@
+<header class="header">
+  <span class="logo" aria-hidden="true"></span>
+
+  <div class="titles">
+    <h1>3D Model Viewer</h1>
+    @if (modelName(); as name) {
+    <p class="model-name">{{ name | titlecase }}</p>
+    }
+  </div>
+
+  <button class="theme-toggle" (click)="toggleTheme()" aria-label="Toggle light/dark theme">
+    <mat-icon>{{ isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+</header>

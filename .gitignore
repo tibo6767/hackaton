@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+.venv/
+
+# Fichiers téléchargés par l'API
+loader/*.json
+
+# Vidéos de preview générées par /model
+loader/*.mp4
+
+# Fichiers générés par l'API (json + previews)
+data/

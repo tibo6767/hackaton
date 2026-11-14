@@ -1,0 +1,38 @@
+@if (!project()) {
+<div class="info">Sélectionne un projet dans le panneau de gauche</div>
+} @else if (loading()) {
+<div class="info">Chargement...</div>
+} @else if (error()) {
+<div class="info">{{ error() }}</div>
+} @else {
+<div class="grid">
+  @for (asset of visible(); track asset.name) {
+  <button class="tile" [title]="asset.description" (click)="assetOpened.emit(asset)"
+    (mouseenter)="onHover(asset)" (mouseleave)="onLeave()">
+    <div class="thumb">
+      @if (hovered() === asset.name && previews()[asset.name]; as src) {
+      <video [src]="src" autoplay loop playsinline [muted]="true"></video>
+      } @else if (asset.thumbnail_url) {
+      <img [src]="asset.thumbnail_url" [alt]="asset.name" loading="lazy" />
+      } @else {
+      <mat-icon>view_in_ar</mat-icon>
+      }
+      @if (hovered() === asset.name && previewLoading().has(asset.name)) {
+      <span class="preview-status">Génération de l'aperçu...</span>
+      }
+    </div>
+    <span class="name">{{ asset.name }}</span>
+  </button>
+  }
+</div>
+
+<div class="pager">
+  <button class="page-btn" (click)="prev()" [disabled]="page() === 0" aria-label="Page précédente">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <span>{{ page() + 1 }} / {{ pageCount() }}</span>
+  <button class="page-btn" (click)="next()" [disabled]="page() >= pageCount() - 1" aria-label="Page suivante">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+</div>
+}

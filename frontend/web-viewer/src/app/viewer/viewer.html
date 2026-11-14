@@ -1,0 +1,61 @@
+<canvas #viewerCanvas id="canvas" tabindex="0" (contextmenu)="$event.preventDefault()"></canvas>
+
+@if (!url()) {
+  <div class="overlay">Sélectionne un asset dans le panneau de gauche</div>
+} @else if (status()) {
+  <div class="overlay">{{ status() }}</div>
+}
+
+<!-- Bouton d'ouverture du panneau -->
+<button class="settings-btn" (click)="panelOpen.set(!panelOpen())"
+        [title]="panelOpen() ? 'Fermer' : 'Paramètres du rendu'">
+  {{ panelOpen() ? '✕' : '⚙' }}
+</button>
+
+<!-- Panneau de paramètres -->
+@if (panelOpen()) {
+  <aside class="settings-panel">
+
+    <p class="panel-title">Paramètres</p>
+
+    <section class="setting-group">
+      <h4>Effets</h4>
+
+      <label class="toggle-row">
+        <span>Occlusion ambiante</span>
+        <input type="checkbox" [checked]="settings().ao"
+               (change)="updateSetting('ao', $any($event.target).checked)">
+      </label>
+
+      <label class="toggle-row">
+        <span>Tone mapping</span>
+        <input type="checkbox" [checked]="settings().toneMapping"
+               (change)="updateSetting('toneMapping', $any($event.target).checked)">
+      </label>
+
+      <label class="toggle-row">
+        <span>Arêtes</span>
+        <input type="checkbox" [checked]="settings().showEdges"
+               (change)="updateSetting('showEdges', $any($event.target).checked)">
+      </label>
+
+      <label class="toggle-row">
+        <span>Grille</span>
+        <input type="checkbox" [checked]="settings().grid"
+               (change)="updateSetting('grid', $any($event.target).checked)">
+      </label>
+    </section>
+
+    <section class="setting-group">
+      <h4>Anti-aliasing</h4>
+      <select [value]="settings().antialiasing"
+              (change)="updateSetting('antialiasing', $any($event.target).value)">
+        <option value="none">Désactivé</option>
+        <option value="fxaa">FXAA</option>
+        <option value="ssaa">SSAA</option>
+        <option value="taa">TAA</option>
+      </select>
+    </section>
+
+  </aside>
+}
