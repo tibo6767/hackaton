@@ -34,11 +34,6 @@ export class projectService {
             .pipe(map(data => Object.entries(data).map(([name, a]) => ({ name, ...a }))));
     }
 
-    // Génère (ou réutilise) la vidéo turntable du modèle et renvoie l'URL pour la lire.
-    // L'API écrit le .mp4 dans data/preview/ et renvoie son chemin dans `preview`
-    // (ex. "../data/preview/X.mp4", relatif à loader/) ; ng serve sert data/ sous /data
-    // (voir proxy.conf.mjs).
-    // Attention : /model cherche dans les assets du dernier projet chargé via /assets.
     getPreviewUrl(modelName: string): Observable<string> {
         return this.http
             .post<{ url: string; preview: string }>(`${this.apiUrl}/model`, null, {
